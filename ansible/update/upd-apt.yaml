@@ -1,35 +1,34 @@
 ---
-- name: Update and upgrade packages on all hosts
+- name: Update and upgrade all packages on all hosts
   hosts: all
-  become: true  # Ensure the tasks run with elevated privileges
+  become: false  # Ensure we are not trying to use sudo
 
   tasks:
-    - name: Update apt package list
+    - name: Update and upgrade apt packages
       when: ansible_pkg_mgr == 'apt'
       ansible.builtin.apt:
-        update_cache: true
-
-    - name: Upgrade all apt packages
-      when: ansible_pkg_mgr == 'apt'
-      ansible.builtin.apt:
+        update_cache: yes
         upgrade: dist
 
-    - name: Update and upgrade all apk packages
+    - name: Update and upgrade yum packages
+      when: ansible_pkg_mgr == 'yum'
+      ansible.builtin.yum:
+        name: '*'
+        state: latest
+
+    - name: Update and upgrade dnf packages
+      when: ansible_pkg_mgr == 'dnf'
+      ansible.builtin.dnf:
+        name: '*'
+        state: latest
+
+    - name: Update and upgrade zypper packages
+      when: ansible_pkg_mgr == 'zypper'
+      ansible.builtin.zypper:
+        name: '*'
+        state: latest
+
+    - name: Update and upgrade apk packages (Alpine Linux)
       when: ansible_pkg_mgr == 'apk'
       ansible.builtin.command:
-        cmd: apk update && apk upgrade --no-cache
-      # The 'command' module doesn't check if changes are made, so we need this to register if updates happen
-      register: apk_upgrade
-      changed_when: "'Upgrading' in apk_upgrade.stdout"
-
-    - name: Reboot if necessary (only for apt systems)
-      when: ansible_pkg_mgr == 'apt' and apt_upgrade.changed
-      ansible.builtin.reboot:
-        msg: "Reboot initiated by Ansible after package upgrade."
-        reboot_timeout: 3600
-
-    - name: Reboot if necessary (only for apk systems)
-      when: ansible_pkg_mgr == 'apk' and apk_upgrade.changed
-      ansible.builtin.reboot:
-        msg: "Reboot initiated by Ansible after package upgrade."
-        reboot_timeout: 3600
+        cmd: apk upgrade --no-cache
