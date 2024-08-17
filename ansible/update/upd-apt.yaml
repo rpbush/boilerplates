@@ -9,8 +9,8 @@
         update_cache: true
 
     - name: Update packages with yum
-      when: ansible_pkg_mgr == 'yum'
-      ansible.builtin.yum:
+      when: ansible_pkg_mgr == 'apk'
+      ansible.builtin.apk:
         name: '*'
         state: latest # noqa: package-latest
 
@@ -20,8 +20,8 @@
         upgrade: dist
 
     - name: Upgrade packages with yum
-      when: ansible_pkg_mgr == 'yum'
-      ansible.builtin.yum:
+      when: ansible_pkg_mgr == 'apk'
+      ansible.builtin.apk:
         name: '*'
         state: latest # noqa: package-latest
         exclude: kernel*
