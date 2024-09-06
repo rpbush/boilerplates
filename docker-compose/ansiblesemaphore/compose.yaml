@@ -1,3 +1,12 @@
+
+# ### Create .env with this content ###
+#   GNU nano 8.0                                                   .env                                                              
+# MYSQL_PASSWORD=secret
+# SEMAPHORE_DB_PASS=secret
+# SEMAPHORE_ADMIN_PASSWORD=secret
+# SEMAPHORE_ACCESS_KEY_ENCRYPTION=secret
+
+
 version: '3'
 volumes:
   semaphore-mysql:
