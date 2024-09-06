@@ -1,12 +1,21 @@
+---
+### example .env config file ###
+# MySQL Configuration
+# MYSQL_PASSWORD=your_mysql_password
 
-# ### Create .env with this content ###
-#   GNU nano 8.0                                                   .env                                                              
-# MYSQL_PASSWORD=secret
-# SEMAPHORE_DB_PASS=secret
-# SEMAPHORE_ADMIN_PASSWORD=secret
-# SEMAPHORE_ACCESS_KEY_ENCRYPTION=secret
+# Semaphore DB Password
+# SEMAPHORE_DB_PASS=your_db_password
 
-version: '3.7'  # Updated version
+# Semaphore Admin Configuration
+# SEMAPHORE_ADMIN_PASSWORD=your_admin_password
+# SEMAPHORE_ACCESS_KEY_ENCRYPTION=your_encryption_key
+
+# UID and GID (Optional, but good for permission management)
+# UID=1000
+# GID=1000
+
+
+version: '3.7'
 volumes:
   semaphore-mysql:
     driver: local
@@ -20,28 +29,29 @@ services:
       - MYSQL_RANDOM_ROOT_PASSWORD=yes
       - MYSQL_DATABASE=semaphore
       - MYSQL_USER=semaphore
-      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}  # Using .env for the MySQL password
     restart: unless-stopped
+
   semaphore:
     container_name: ansiblesemaphore
     image: docker.io/semaphoreui/semaphore:v2.10.22
-    user: "${UID:-1000}:${GID:-1000}"  # Default to 1000 if not set
+    user: "${UID}:${GID}"
     ports:
       - 3000:3000
     environment:
-      - SEMAPHORE_DB_USER=semaphore235
-      - SEMAPHORE_DB_PASS=${SEMAPHORE_DB_PASS}
+      - SEMAPHORE_DB_USER=semaphore
+      - SEMAPHORE_DB_PASS=${SEMAPHORE_DB_PASS}  # Using .env for Semaphore DB password
       - SEMAPHORE_DB_HOST=mysql
       - SEMAPHORE_DB_PORT=3306
       - SEMAPHORE_DB_DIALECT=mysql
       - SEMAPHORE_DB=semaphore
       - SEMAPHORE_PLAYBOOK_PATH=/tmp/semaphore/
-      - SEMAPHORE_ADMIN_PASSWORD=${SEMAPHORE_ADMIN_PASSWORD}
-      - SEMAPHORE_ADMIN_NAME=ryan
-      - SEMAPHORE_ADMIN_EMAIL=ryan@rpbush.com
+      - SEMAPHORE_ADMIN_PASSWORD=${SEMAPHORE_ADMIN_PASSWORD}  # Using .env for admin password
+      - SEMAPHORE_ADMIN_NAME=admin
+      - SEMAPHORE_ADMIN_EMAIL=admin@localhost
       - SEMAPHORE_ADMIN=admin
-      - SEMAPHORE_ACCESS_KEY_ENCRYPTION=${SEMAPHORE_ACCESS_KEY_ENCRYPTION}
-      - ANSIBLE_HOST_KEY_CHECKING=false
+      - SEMAPHORE_ACCESS_KEY_ENCRYPTION=${SEMAPHORE_ACCESS_KEY_ENCRYPTION}  # Using .env for encryption key
+      - ANSIBLE_HOST_KEY_CHECKING=false  # (optional) change to true if you want to enable host key checking
     volumes:
       - ./inventory/:/inventory:ro
       - ./authorized-keys/:/authorized-keys:ro
