@@ -1,4 +1,4 @@
----
+version: '3'
 volumes:
   semaphore-mysql:
     driver: local
@@ -12,7 +12,7 @@ services:
       - MYSQL_RANDOM_ROOT_PASSWORD=yes
       - MYSQL_DATABASE=semaphore
       - MYSQL_USER=semaphore
-      - MYSQL_PASSWORD=secret-password  # change!
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}  # Refer to env variable
     restart: unless-stopped
   semaphore:
     container_name: ansiblesemaphore
@@ -21,19 +21,19 @@ services:
     ports:
       - 3000:3000
     environment:
-      - SEMAPHORE_DB_USER=semaphore
-      - SEMAPHORE_DB_PASS=secret-password  # change!
+      - SEMAPHORE_DB_USER=semaphore235
+      - SEMAPHORE_DB_PASS=${SEMAPHORE_DB_PASS}  # Refer to env variable
       - SEMAPHORE_DB_HOST=mysql
       - SEMAPHORE_DB_PORT=3306
       - SEMAPHORE_DB_DIALECT=mysql
       - SEMAPHORE_DB=semaphore
       - SEMAPHORE_PLAYBOOK_PATH=/tmp/semaphore/
-      - SEMAPHORE_ADMIN_PASSWORD=secret-admin-password  # change!
-      - SEMAPHORE_ADMIN_NAME=admin
-      - SEMAPHORE_ADMIN_EMAIL=admin@localhost
+      - SEMAPHORE_ADMIN_PASSWORD=${SEMAPHORE_ADMIN_PASSWORD}  # Refer to env variable
+      - SEMAPHORE_ADMIN_NAME=ryan
+      - SEMAPHORE_ADMIN_EMAIL=ryan@rpbush.com
       - SEMAPHORE_ADMIN=admin
-      - SEMAPHORE_ACCESS_KEY_ENCRYPTION=  # add to your access key encryption !
-      - ANSIBLE_HOST_KEY_CHECKING=false  # (optional) change to true if you want to enable host key checking
+      - SEMAPHORE_ACCESS_KEY_ENCRYPTION=${SEMAPHORE_ACCESS_KEY_ENCRYPTION}  # Refer to env variable
+      - ANSIBLE_HOST_KEY_CHECKING=false
     volumes:
       - ./inventory/:/inventory:ro
       - ./authorized-keys/:/authorized-keys:ro
